@@ -13,7 +13,6 @@ DefaultCallback
 """
 def DefaultCallback(data):
     result.append(data)
-    print(repr(data))
 
 # initialize ADS api
 ads = ADS1299_API()
@@ -35,8 +34,10 @@ print('Test Over')
 
 print(result)
 
+
+# Generate the unique filename
 dt = datetime.now()
 file_name = 'ads_eeg_data_' + str(dt)
 
-with open('ads_eeg_data_12345', 'w') as txt_file:
+with open(file_name, 'w') as txt_file:
     txt_file.write('\n'.join(' '.join(map(str, x)) for x in result))
