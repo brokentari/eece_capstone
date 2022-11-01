@@ -1,0 +1,5 @@
+#!/bin/bash
+
+new_file="$(echo "ads_eeg_data_2022_10_01" | grep "ads")"
+
+cp $new_file ads_eeg_data
