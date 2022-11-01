@@ -1,5 +1,7 @@
 #!/bin/bash
 
-new_file="$(echo "ads_eeg_data_2022_10_01" | grep "ads")"
+new_file="$(./driver_test.py | grep "ads_eeg_data")"
+
+sed -i '1s/^/voltage\n' $new_file
 
 cp $new_file ads_eeg_data
