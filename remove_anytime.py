@@ -15,7 +15,7 @@ fft_sinewave = np.fft.fft(sinewave)
 psd = np.abs(fft_sinewave)
 trange = np.linspace(0, sample_rate, len(time))
 
-plt.plot(trange, fft_sinewave)
+plt.plot(time, sinewave)
 
 
 plt.show()
