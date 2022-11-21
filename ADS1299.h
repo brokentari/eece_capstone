@@ -16,7 +16,7 @@
 class ADS1299 {
 public:
     
-    void setup(int _DRDY, int _CS);
+    void setup(int _DRDY, int _CS, int _NPOWER, int _NRESET);
     
     //ADS1299 SPI Command Definitions (Datasheet, Pg. 35)
     //System Commands

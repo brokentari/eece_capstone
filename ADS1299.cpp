@@ -8,7 +8,7 @@
 #include "ADS1299.h"
 #include "pins_arduino.h"
 
-void ADS1299::setup(int _DRDY, int _CS){
+void ADS1299::setup(int _DRDY, int _CS, int _NPOWER, int _NRESET){
     
     // **** ----- SPI Setup ----- **** //
     
@@ -21,6 +21,8 @@ void ADS1299::setup(int _DRDY, int _CS){
     pinMode(SCK, OUTPUT);
     pinMode(MOSI, OUTPUT);
     pinMode(SS, OUTPUT);
+    pinMode(_NPOWER, OUTPUT);
+    pinMode(_NRESET, OUTPUT);
     
     digitalWrite(SCK, LOW);
     digitalWrite(MOSI, LOW);
@@ -52,6 +54,18 @@ void ADS1299::setup(int _DRDY, int _CS){
     
     tCLK = 0.000666; //666 ns (Datasheet, pg. 8)
     outputCount = 0;
+
+    delay(10);
+
+    digitalWrite(_NPOWER, HIGH);
+    digitalWrite(_NRESET, HIGH);
+    delay(100);
+    
+    // reset pulse
+    digitalWrite(_NRESET, LOW);
+    delay(10);
+    digitalWrite(_NRESET, HIGH);
+    
 }
 
 //System Commands
@@ -109,7 +123,6 @@ void ADS1299::getDeviceID() {
     byte data = transfer(0x00); // byte to read (hopefully 0b???11110)
     transfer(_RDATAC); //turn read data continuous back on
     digitalWrite(CS, HIGH); //Low to communicated
-    Serial.println(data, BIN);
 }
 
 void ADS1299::RREG(byte _address) {
@@ -198,12 +211,23 @@ void ADS1299::updateData(){
             dataPacket = 0;
         }
         digitalWrite(CS, HIGH);
-        Serial.print(outputCount);
-        Serial.print(", ");
-        for (int i=0;i<9; i++) {
-            Serial.print(output[i], HEX);
-            if(i!=8) Serial.print(", ");
+        float voltage = 0;
+        long output_temp = 0;
+        for (int i=1;i<2; i++) {
             
+            // MSB == 1
+            if (output[i] < 0) {
+              output_temp = output[i] - pow(2, 24);
+            }
+            // MSB == 0
+            else {
+              output_temp = output[i];
+            }
+
+            voltage = output_temp * (2 * 4.5 / 24) / pow(2, 24);
+
+            Serial.print("voltage:");
+            Serial.print(voltage,4);            
         }
         Serial.println();
         outputCount++;
